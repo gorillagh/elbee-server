@@ -22,7 +22,7 @@ exports.uploadFile = async (req, res) => {
     const { file } = await req.files;
     console.log("file to upload---->", file.name);
     const { orderType } = await req.params;
-    console.log("hello");
+    console.log("hel");
 
     if (!file) return res.status(400).send("No file");
 
