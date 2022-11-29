@@ -9,6 +9,6 @@ const { authCheck, adminCheck } = require("../middlewares/auth");
 //Controllers
 const { uploadFile } = require("../controllers/order");
 
-router.post("/uploadfile", formidable(), uploadFile);
+router.post("/uploadfile/:orderType", formidable(), uploadFile);
 
 module.exports = router;
