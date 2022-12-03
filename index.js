@@ -23,7 +23,7 @@ mongoose
 
 //Middlewares
 app.use(morgan("tiny"));
-// app.use(cors());
+app.use(cors());
 app.use(express.json({ limit: "2mb" })); //Used to parse JSON bodies
 app.use(express.urlencoded({ limit: "2mb", extended: true })); //Parse URL-encoded bodies
 
