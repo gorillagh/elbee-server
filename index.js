@@ -22,6 +22,10 @@ mongoose
   );
 
 //Middlewares
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json({ limit: "2mb" })); //Used to parse JSON bodies
