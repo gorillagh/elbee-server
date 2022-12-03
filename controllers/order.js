@@ -4,8 +4,8 @@ const { readFileSync, createReadStream } = require("fs");
 const currency = require("currency.js");
 import AWS from "aws-sdk";
 
-const ffprobe = require("ffprobe");
-const ffprobeStatic = require("ffprobe-static");
+// const ffprobe = require("ffprobe");
+// const ffprobeStatic = require("ffprobe-static");
 const { getAudioDurationInSeconds } = require("get-audio-duration");
 
 const awsConfig = {
