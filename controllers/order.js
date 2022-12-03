@@ -6,7 +6,7 @@ import AWS from "aws-sdk";
 
 // const ffprobe = require("ffprobe");
 // const ffprobeStatic = require("ffprobe-static");
-const { getAudioDurationInSeconds } = require("get-audio-duration");
+// const { getAudioDurationInSeconds } = require("get-audio-duration");
 
 const awsConfig = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -43,7 +43,8 @@ exports.uploadFile = async (req, res) => {
       }
       let uploadedFile;
       console.log(data);
-      let duration = (await getAudioDurationInSeconds(file.path)) / 60;
+      // let duration = (await getAudioDurationInSeconds(file.path)) / 60;
+      let duration = 100 / 60;
       duration =
         duration % 1 > 0
           ? (duration > 0 ? Math.floor(duration) : Math.ceil(duration)) + 1
