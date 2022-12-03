@@ -24,8 +24,8 @@ mongoose
 //Middlewares
 app.use(morgan("tiny"));
 app.use(cors());
-app.use(express.json({ limit: "6000mb" })); //Used to parse JSON bodies
-app.use(express.urlencoded({ limit: "6000mb", extended: true })); //Parse URL-encoded bodies
+app.use(express.json({ limit: "2mb" })); //Used to parse JSON bodies
+app.use(express.urlencoded({ limit: "2mb", extended: true })); //Parse URL-encoded bodies
 
 //Routes Middleware
 readdirSync("./routes").map((r) => app.use("/api", require("./routes/" + r)));
