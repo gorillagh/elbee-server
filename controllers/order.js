@@ -35,39 +35,56 @@ exports.uploadFile = async (req, res) => {
       ContentType: file.type,
     };
 
-    S3.upload(params, async (err, data) => {
-      if (err) {
-        console.log(err);
-        res.sendStatus(400);
-        return;
-      }
-      let uploadedFile;
-      console.log(data);
-      // let duration = (await getAudioDurationInSeconds(file.path)) / 60;
-      let duration = 100 / 70;
-      duration =
-        duration % 1 > 0
-          ? (duration > 0 ? Math.floor(duration) : Math.ceil(duration)) + 1
-          : duration > 0
-          ? Math.floor(duration)
-          : Math.ceil(duration);
-      console.log("duration====>", duration);
-      uploadedFile = {
-        id: await data.Key,
-        name: file.name.split("/")[1],
-        path: file.path,
-        size: file.size,
-        type: file.type,
-        duration,
-        cost: currency(orderType === "transcription" ? duration * 1 : 0).value,
-        location: await data.Location,
-        express: false,
-        verbatim: false,
-        timeStamp: false,
-        total: currency(orderType === "transcription" ? duration * 1 : 0).value,
-      };
+    // S3.upload(params, async (err, data) => {
+    //   if (err) {
+    //     console.log(err);
+    //     res.sendStatus(400);
+    //     return;
+    //   }
+    //   let uploadedFile;
+    //   console.log(data);
+    //   // let duration = (await getAudioDurationInSeconds(file.path)) / 60;
+    //   let duration = 100 / 70;
+    //   duration =
+    //     duration % 1 > 0
+    //       ? (duration > 0 ? Math.floor(duration) : Math.ceil(duration)) + 1
+    //       : duration > 0
+    //       ? Math.floor(duration)
+    //       : Math.ceil(duration);
+    //   console.log("duration====>", duration);
+    //   uploadedFile = {
+    //     id: await data.Key,
+    //     name: file.name.split("/")[1],
+    //     path: file.path,
+    //     size: file.size,
+    //     type: file.type,
+    //     duration,
+    //     cost: currency(orderType === "transcription" ? duration * 1 : 0).value,
+    //     location: await data.Location,
+    //     express: false,
+    //     verbatim: false,
+    //     timeStamp: false,
+    //     total: currency(orderType === "transcription" ? duration * 1 : 0).value,
+    //   };
 
-      res.json(uploadedFile);
+    //   res.json(uploadedFile);
+    // });
+
+    let duration = 50;
+
+    res.json({
+      id: 1123245,
+      name: file.name.split("/")[1],
+      path: file.path,
+      size: file.size,
+      type: file.type,
+      duration,
+      cost: currency(orderType === "transcription" ? duration * 1 : 0).value,
+      location: file.path,
+      express: false,
+      verbatim: false,
+      timeStamp: false,
+      total: currency(orderType === "transcription" ? duration * 1 : 0).value,
     });
 
     // ffprobe(
