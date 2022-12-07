@@ -44,7 +44,7 @@ exports.uploadFile = async (req, res) => {
       let uploadedFile;
       console.log(data);
       // let duration = (await getAudioDurationInSeconds(file.path)) / 60;
-      let duration = 100 / 60;
+      let duration = 100 / 70;
       duration =
         duration % 1 > 0
           ? (duration > 0 ? Math.floor(duration) : Math.ceil(duration)) + 1
