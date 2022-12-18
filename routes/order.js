@@ -7,8 +7,10 @@ const router = express.Router();
 const { authCheck, adminCheck } = require("../middlewares/auth");
 
 //Controllers
-const { uploadFile } = require("../controllers/order");
+const { uploadFile, saveOrder, getOrder } = require("../controllers/order");
 
 router.post("/uploadfile/:orderType", formidable(), uploadFile);
+router.post("/saveorder", saveOrder);
+router.get("/getorder/:orderId", getOrder);
 
 module.exports = router;

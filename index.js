@@ -22,8 +22,8 @@ mongoose
   );
 
 //Middlewares
-app.use(morgan("tiny"));
 app.use(cors());
+app.use(morgan("tiny"));
 app.use(express.json({ limit: "6000mb" })); //Used to parse JSON bodies
 app.use(express.urlencoded({ limit: "6000mb", extended: true })); //Parse URL-encoded bodies
 
