@@ -9,11 +9,14 @@ import AWS from "aws-sdk";
 
 // const ffprobe = require("ffprobe");
 // const ffprobeStatic = require("ffprobe-static");
+const ffmpeg = require("fluent-ffmpeg");
+const ffprobePath = require("@ffprobe-installer/ffprobe");
+ffmpeg.setFfprobePath(ffprobePath);
 const { getAudioDurationInSeconds } = require("get-audio-duration");
 
 const awsConfig = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRETE_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: process.env.AWS_REGION,
   apiVersion: process.env.AWS_API_VERSION,
 };
@@ -23,6 +26,17 @@ const S3 = new AWS.S3(awsConfig);
 exports.uploadFile = async (req, res) => {
   try {
     const { file } = await req.files;
+    // ffmpeg.ffprobe(
+    //   "https://www.youtube.com/watch?v=6Ffxways8u8",
+    //   (err, metadata) => {
+    //     if (err) {
+    //       console.log(err);
+    //       return;
+    //     }
+    //     const durationInSeconds = metadata.format.duration;
+    //     console.log(`Duration: ${durationInSeconds} seconds`);
+    //   }
+    // );
     const { orderType } = await req.params;
 
     if (!file) return res.status(400).send("No file");
@@ -35,46 +49,40 @@ exports.uploadFile = async (req, res) => {
       ACL: "public-read",
       ContentType: file.type,
     };
+    let uploadedFile;
+    S3.upload(params, async (err, data) => {
+      if (err) {
+        console.log(err);
+        res.sendStatus(400);
+        return;
+      }
 
-    // S3.upload(params, async (err, data) => {
-    //   if (err) {
-    //     console.log(err);
-    //     res.sendStatus(400);
-    //     return;
-    //   }
-    //   let uploadedFile;
-    //   console.log(data);
-    //   let duration = (await getAudioDurationInSeconds(file.path)) / 60;
-    //   duration =
-    //     duration % 1 > 0
-    //       ? (duration > 0 ? Math.floor(duration) : Math.ceil(duration)) + 1
-    //       : duration > 0
-    //       ? Math.floor(duration)
-    //       : Math.ceil(duration);
-    //   console.log("duration====>", duration);
-    //   uploadedFile = {
-    //     id: await data.Key,
-    //     name: file.name.split("/")[1],
-    //     path: file.path,
-    //     size: file.size,
-    //     type: file.type,
-    //     duration,
-    //     cost: currency(orderType === "transcription" ? duration * 1 : 0).value,
-    //     location: await data.Location,
-    //     express: false,
-    //     verbatim: false,
-    //     timeStamp: false,
-    //     total: currency(orderType === "transcription" ? duration * 1 : 0).value,
-    //   };
+      console.log(data);
 
-    //   res.json(uploadedFile);
-    // }).on("httpUploadProgress", function (progress) {
-    //   let progressPercentage = Math.round(
-    //     (progress.loaded / progress.total) * 100
-    //   );
-
-    //   console.log("Upload percentage---->", progressPercentage);
-    // });
+      let duration = (await getAudioDurationInSeconds(file.path)) / 60;
+      duration =
+        duration % 1 > 0
+          ? (duration > 0 ? Math.floor(duration) : Math.ceil(duration)) + 1
+          : duration > 0
+          ? Math.floor(duration)
+          : Math.ceil(duration);
+      console.log("duration====>", duration);
+      uploadedFile = {
+        id: await data.Key,
+        name: file.name.split("/")[1],
+        path: file.path,
+        size: file.size,
+        type: file.type,
+        duration,
+        cost: currency(orderType === "transcription" ? duration * 1 : 0).value,
+        location: await data.Location,
+        express: false,
+        verbatim: false,
+        timeStamp: false,
+        total: currency(orderType === "transcription" ? duration * 1 : 0).value,
+      };
+      res.json(uploadedFile);
+    });
 
     // ffprobe(
     //   "https://elbee-bucket.s3.amazonaws.com/367a3d6e-1dc3-41a8-9191-89462b19aa91.x-matroska",
@@ -98,22 +106,22 @@ exports.uploadFile = async (req, res) => {
     // file.total = 50;
     // file.duration = 2;
     // file.amount = 50;
-    const duration = 30;
-    const uploadedFile = {
-      id: await file.name.split("/")[0],
-      name: await file.name.split("/")[1],
-      path: file.path,
-      size: file.size,
-      type: file.type,
-      duration,
-      cost: currency(orderType === "transcription" ? duration * 1 : 0).value,
-      location: `https\\:${file.name}.com`,
-      express: false,
-      verbatim: false,
-      timeStamp: false,
-      total: currency(orderType === "transcription" ? duration * 1 : 0).value,
-    };
-    res.json(uploadedFile);
+    // const duration = 30;
+    // const uploadedFile = {
+    //   id: await file.name.split("/")[0],
+    //   name: await file.name.split("/")[1],
+    //   path: file.path,
+    //   size: file.size,
+    //   type: file.type,
+    //   duration,
+    //   cost: currency(orderType === "transcription" ? duration * 1 : 0).value,
+    //   location: `https\\:${file.name}.com`,
+    //   express: false,
+    //   verbatim: false,
+    //   timeStamp: false,
+    //   total: currency(orderType === "transcription" ? duration * 1 : 0).value,
+    // };
+    // res.json(uploadedFile);
   } catch (error) {
     console.log(error);
   }
@@ -162,8 +170,25 @@ exports.getCart = async (req, res) => {
 exports.getOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const order = await Order.findOne({ id: orderId }).exec();
+    const order = await Order.findOne({ id: orderId })
+      .populate("userId")
+      .exec();
     res.json(order);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.update = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    console.log(req.body);
+    const updatedOrder = await Order.findOneAndUpdate(
+      { id: orderId },
+      { ...req.body },
+      { new: true }
+    ).exec();
+    res.json(updatedOrder);
   } catch (error) {
     console.log(error);
   }

@@ -11,6 +11,9 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    receiverEmail: String,
+    paymentMethod: String,
+    notes: String,
     paid: {
       type: Boolean,
       default: false,
